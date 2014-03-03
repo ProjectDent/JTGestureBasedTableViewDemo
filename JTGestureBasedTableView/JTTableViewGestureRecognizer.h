@@ -46,7 +46,7 @@ extern CGFloat const JTTableViewRowAnimationDuration;
 
 @optional
 
--(BOOL)gestureRecognizerShouldCreateCellWithPullFromTop:(JTTableViewGestureRecognizer *)gestureRecognizer;
+- (BOOL)gestureRecognizerShouldCreateCellWithPullFromTop:(JTTableViewGestureRecognizer *)gestureRecognizer;
 - (NSIndexPath *)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer willCreateCellAtIndexPath:(NSIndexPath *)indexPath;
 - (CGFloat)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer heightForCommittingRowAtIndexPath:(NSIndexPath *)indexPath;
 
@@ -82,6 +82,11 @@ extern CGFloat const JTTableViewRowAnimationDuration;
 - (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsCreatePlaceholderForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsMoveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath;
 - (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsReplacePlaceholderForRowAtIndexPath:(NSIndexPath *)indexPath;
+
+@optional
+
+- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer willBeginDisplayingPlaceholder:(UIView *)placeholder;
+- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer willEndDisplayingPlaceholder:(UIView *)placeholder;
 
 @end
 

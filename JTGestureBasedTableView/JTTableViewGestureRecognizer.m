@@ -287,6 +287,11 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
             CGRect rect = [self.tableView rectForRowAtIndexPath:indexPath];
             snapShotView.frame = CGRectOffset(snapShotView.bounds, rect.origin.x, rect.origin.y);
         }
+        
+        if ([self.delegate respondsToSelector:@selector(gestureRecognizer:willBeginDisplayingPlaceholder:)]) {
+            [self.delegate gestureRecognizer:self willBeginDisplayingPlaceholder:snapShotView];
+        }
+        
         // Make a zoom in effect for the cell
         [UIView beginAnimations:@"zoomCell" context:nil];
         snapShotView.transform = CGAffineTransformMakeScale(1.1, 1.1);
@@ -319,6 +324,10 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
         // Stop timer
         [self.movingTimer invalidate]; self.movingTimer = nil;
         self.scrollingRate = 0;
+        
+        if ([self.delegate respondsToSelector:@selector(gestureRecognizer:willEndDisplayingPlaceholder:)]) {
+            [self.delegate gestureRecognizer:self willEndDisplayingPlaceholder:snapShotView];
+        }
 
         [UIView animateWithDuration:JTTableViewRowAnimationDuration
                          animations:^{
@@ -464,6 +473,7 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
 #pragma mark UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    
     if ( ! [self.delegate conformsToProtocol:@protocol(JTTableViewGestureAddingRowDelegate)]) {
         if ([self.tableViewDelegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
             [self.tableViewDelegate scrollViewDidScroll:scrollView];
