@@ -326,7 +326,6 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
                              snapShotView.transform = CGAffineTransformIdentity;    // restore the transformed value
                              snapShotView.frame = CGRectOffset(snapShotView.bounds, rect.origin.x, rect.origin.y);
                          } completion:^(BOOL finished) {
-                             [snapShotView removeFromSuperview];
                              
                              [weakSelf.tableView beginUpdates];
                              [weakSelf.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
@@ -339,6 +338,11 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
                              weakSelf.cellSnapshot = nil;
                              weakSelf.addingIndexPath = nil;
                              weakSelf.state = JTTableViewGestureRecognizerStateNone;
+                             
+                             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC);
+                             dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                                 [snapShotView removeFromSuperview];
+                             });
                          }];
 
 
