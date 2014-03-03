@@ -46,6 +46,7 @@ extern CGFloat const JTTableViewRowAnimationDuration;
 
 @optional
 
+-(BOOL)gestureRecognizerShouldCreateCellWithPullFromTop:(JTTableViewGestureRecognizer *)gestureRecognizer;
 - (NSIndexPath *)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer willCreateCellAtIndexPath:(NSIndexPath *)indexPath;
 - (CGFloat)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer heightForCommittingRowAtIndexPath:(NSIndexPath *)indexPath;
 

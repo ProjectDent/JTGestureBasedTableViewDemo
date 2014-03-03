@@ -466,38 +466,40 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
         }
         return;
     }
-
-    // We try to create a new cell when the user tries to drag the content to and offset of negative value
-    if (scrollView.contentOffset.y < 0) {
-        // Here we make sure we're not conflicting with the pinch event,
-        // ! scrollView.isDecelerating is to detect if user is actually
-        // touching on our scrollView, if not, we should assume the scrollView
-        // needed not to be adding cell
-        if ( ! self.addingIndexPath && self.state == JTTableViewGestureRecognizerStateNone && ! scrollView.isDecelerating) {
-            self.state = JTTableViewGestureRecognizerStateDragging;
-
-            self.addingIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-            if ([self.delegate respondsToSelector:@selector(gestureRecognizer:willCreateCellAtIndexPath:)]) {
-                self.addingIndexPath = [self.delegate gestureRecognizer:self willCreateCellAtIndexPath:self.addingIndexPath];
-            }
-
-            if (self.addingIndexPath) {
-                [self.tableView beginUpdates];
-                [self.delegate gestureRecognizer:self needsAddRowAtIndexPath:self.addingIndexPath];
-                [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:self.addingIndexPath] withRowAnimation:UITableViewRowAnimationNone];
-
-                self.addingRowHeight = fabsf(scrollView.contentOffset.y);
-                [self.tableView endUpdates];
+    
+    if ([self.delegate respondsToSelector:@selector(gestureRecognizerShouldCreateCellWithPullFromTop:)] && [self.delegate gestureRecognizerShouldCreateCellWithPullFromTop:self]) {
+        // We try to create a new cell when the user tries to drag the content to and offset of negative value
+        if (scrollView.contentOffset.y < 0) {
+            // Here we make sure we're not conflicting with the pinch event,
+            // ! scrollView.isDecelerating is to detect if user is actually
+            // touching on our scrollView, if not, we should assume the scrollView
+            // needed not to be adding cell
+            if ( ! self.addingIndexPath && self.state == JTTableViewGestureRecognizerStateNone && ! scrollView.isDecelerating) {
+                self.state = JTTableViewGestureRecognizerStateDragging;
+                
+                self.addingIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+                if ([self.delegate respondsToSelector:@selector(gestureRecognizer:willCreateCellAtIndexPath:)]) {
+                    self.addingIndexPath = [self.delegate gestureRecognizer:self willCreateCellAtIndexPath:self.addingIndexPath];
+                }
+                
+                if (self.addingIndexPath) {
+                    [self.tableView beginUpdates];
+                    [self.delegate gestureRecognizer:self needsAddRowAtIndexPath:self.addingIndexPath];
+                    [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:self.addingIndexPath] withRowAnimation:UITableViewRowAnimationNone];
+                    
+                    self.addingRowHeight = fabsf(scrollView.contentOffset.y);
+                    [self.tableView endUpdates];
+                }
             }
         }
-    }
-
-    // Check if addingIndexPath not exists, we don't want to
-    // alter the contentOffset of our scrollView
-    if (self.addingIndexPath && self.state == JTTableViewGestureRecognizerStateDragging) {
-        self.addingRowHeight += scrollView.contentOffset.y * -1;
-        [self.tableView reloadData];
-        [scrollView setContentOffset:CGPointZero];
+        
+        // Check if addingIndexPath not exists, we don't want to
+        // alter the contentOffset of our scrollView
+        if (self.addingIndexPath && self.state == JTTableViewGestureRecognizerStateDragging) {
+            self.addingRowHeight += scrollView.contentOffset.y * -1;
+            [self.tableView reloadData];
+            [scrollView setContentOffset:CGPointZero];
+        }
     }
 }
 
