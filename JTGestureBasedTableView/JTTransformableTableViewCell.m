@@ -77,7 +77,6 @@
         self.detailTextLabel.font = self.textLabel.font;
         self.detailTextLabel.textColor = self.textLabel.textColor;
         self.detailTextLabel.textAlignment = self.textLabel.textAlignment;
-        self.detailTextLabel.textColor = [UIColor whiteColor];
         self.detailTextLabel.shadowColor = self.textLabel.shadowColor;
         self.detailTextLabel.shadowOffset = self.textLabel.shadowOffset;
     }
