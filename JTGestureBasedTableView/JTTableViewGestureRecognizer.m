@@ -288,9 +288,6 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
             snapShotView.frame = CGRectOffset(snapShotView.bounds, rect.origin.x, rect.origin.y);
         }
         
-        if ([self.delegate respondsToSelector:@selector(gestureRecognizer:willBeginDisplayingPlaceholder:)]) {
-            [self.delegate gestureRecognizer:self willBeginDisplayingPlaceholder:snapShotView];
-        }
         
         // Make a zoom in effect for the cell
         [UIView beginAnimations:@"zoomCell" context:nil];
@@ -302,6 +299,10 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
         [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
         [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
         [self.delegate gestureRecognizer:self needsCreatePlaceholderForRowAtIndexPath:indexPath];
+        
+        if ([self.delegate respondsToSelector:@selector(gestureRecognizer:willBeginDisplayingPlaceholder:)]) {
+            [self.delegate gestureRecognizer:self willBeginDisplayingPlaceholder:snapShotView];
+        }
         
         self.addingIndexPath = indexPath;
 
