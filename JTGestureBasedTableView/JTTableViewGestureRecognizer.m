@@ -35,6 +35,7 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
 @property (nonatomic, strong) UIImage                       *cellSnapshot;
 @property (nonatomic, assign) CGFloat                        scrollingRate;
 @property (nonatomic, strong) NSTimer                       *movingTimer;
+@property (nonatomic) CGSize selectedLocationDifference;
 
 - (void)updateAddingIndexPathForCurrentLocation;
 - (void)commitOrDiscardCell;
@@ -71,7 +72,7 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
     
     if (location.y >= 0) {
         UIImageView *cellSnapshotView = (id)[self.tableView viewWithTag:CELL_SNAPSHOT_TAG];
-        cellSnapshotView.center = CGPointMake(self.tableView.center.x, location.y);
+        cellSnapshotView.center = CGPointMake(self.tableView.center.x, location.y - self.selectedLocationDifference.height); //SETHERE
     }
     
     [self updateAddingIndexPathForCurrentLocation];
@@ -84,6 +85,8 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
 
     // Refresh the indexPath since it may change while we use a new offset
     location  = [self.longPressRecognizer locationInView:self.tableView];
+    NSLog(@"difference: %f", self.selectedLocationDifference.height);
+    location = CGPointMake(location.x, location.y - self.selectedLocationDifference.height);
     indexPath = [self.tableView indexPathForRowAtPoint:location];
     
 
@@ -295,14 +298,15 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
             snapShotView.tag = CELL_SNAPSHOT_TAG;
             [self.tableView addSubview:snapShotView];
             CGRect rect = [self.tableView rectForRowAtIndexPath:indexPath];
-            snapShotView.frame = CGRectOffset(snapShotView.bounds, rect.origin.x, rect.origin.y);
+            snapShotView.frame = CGRectOffset(snapShotView.bounds, rect.origin.x, rect.origin.y); //SETHERE
         }
         
         
         // Make a zoom in effect for the cell
         [UIView beginAnimations:@"zoomCell" context:nil];
         snapShotView.transform = CGAffineTransformMakeScale(1.1, 1.1);
-        snapShotView.center = CGPointMake(self.tableView.center.x, location.y);
+        self.selectedLocationDifference = CGSizeMake(0, location.y - snapShotView.center.y);
+        //snapShotView.center = CGPointMake(self.tableView.center.x, location.y); //SETHERE
         [UIView commitAnimations];
 
         [self.tableView beginUpdates];
@@ -344,7 +348,7 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
                          animations:^{
                              CGRect rect = [weakSelf.tableView rectForRowAtIndexPath:indexPath];
                              snapShotView.transform = CGAffineTransformIdentity;    // restore the transformed value
-                             snapShotView.frame = CGRectOffset(snapShotView.bounds, rect.origin.x, rect.origin.y);
+                             snapShotView.frame = CGRectOffset(snapShotView.bounds, rect.origin.x, rect.origin.y); //SETHERE
                          } completion:^(BOOL finished) {
                              
                              [weakSelf.tableView beginUpdates];
@@ -369,7 +373,8 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
     } else if (recognizer.state == UIGestureRecognizerStateChanged) {
         // While our finger moves, we also moves the snapshot imageView
         UIImageView *snapShotView = (UIImageView *)[self.tableView viewWithTag:CELL_SNAPSHOT_TAG];
-        snapShotView.center = CGPointMake(self.tableView.center.x, location.y);
+        
+        //snapShotView.center = CGPointMake(self.tableView.center.x, location.y); //SETHERE
 
         CGRect rect      = self.tableView.bounds;
         CGPoint location = [self.longPressRecognizer locationInView:self.tableView];
