@@ -85,7 +85,6 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
 
     // Refresh the indexPath since it may change while we use a new offset
     location  = [self.longPressRecognizer locationInView:self.tableView];
-    NSLog(@"difference: %f", self.selectedLocationDifference.height);
     location = CGPointMake(location.x, location.y - self.selectedLocationDifference.height);
     indexPath = [self.tableView indexPathForRowAtPoint:location];
     
