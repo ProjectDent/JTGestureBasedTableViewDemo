@@ -84,8 +84,12 @@
         self.detailTextLabel.shadowColor = self.textLabel.shadowColor;
         self.detailTextLabel.shadowOffset = self.textLabel.shadowOffset;
     }
-    self.textLabel.frame = CGRectMake(10.0, 0.0, contentViewSize.width - 20.0, self.finishedHeight);
-    self.detailTextLabel.frame = CGRectMake(10.0, -self.finishedHeight / 2, contentViewSize.width - 20.0, self.finishedHeight);
+    
+    CGSize textLabelSize = [self.textLabel.text sizeWithAttributes:@{NSFontAttributeName: self.textLabel.font}];
+    
+    self.textLabel.frame = CGRectMake(10.0, 0.0, textLabelSize.width, textLabelSize.height);
+    self.textLabel.center = CGPointMake(self.textLabel.center.x, contentViewSize.height / 2);
+    self.detailTextLabel.frame = CGRectMake(10.0, self.textLabel.frame.origin.y  - (self.finishedHeight / 2), self.textLabel.frame.size.width, self.textLabel.frame.size.height);
     
     if (self.imageView.image) {
         if (!self.bottomImageView) {
@@ -127,6 +131,16 @@
     if ([imageView superview] != [self transformable1HalfView])
         [self.transformable1HalfView addSubview:imageView];
     return imageView;
+}
+
+-(void)setTintColor:(UIColor *)tintColor {
+    [super setTintColor:tintColor];
+    if (tintColor.alpha >= 1.0) {
+        self.opaque = YES;
+        self.contentView.opaque = YES;
+        self.transformable1HalfView.opaque = YES;
+        self.transformable2HalfView.opaque = YES;
+    }
 }
 
 @end
