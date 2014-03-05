@@ -85,6 +85,7 @@ extern CGFloat const JTTableViewRowAnimationDuration;
 
 @optional
 
+- (BOOL)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer canMoveRowAtIndexPathAsResultOfMovingAnotherRow:(NSIndexPath *)indexPath;
 - (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer willBeginDisplayingPlaceholder:(UIView *)placeholder;
 - (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer willEndDisplayingPlaceholder:(UIView *)placeholder;
 

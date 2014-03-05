@@ -85,16 +85,26 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
     // Refresh the indexPath since it may change while we use a new offset
     location  = [self.longPressRecognizer locationInView:self.tableView];
     indexPath = [self.tableView indexPathForRowAtPoint:location];
+    
 
     if (indexPath && ! [indexPath isEqual:self.addingIndexPath]) {
-        [self.tableView beginUpdates];
-        [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.addingIndexPath] withRowAnimation:UITableViewRowAnimationNone];
-        [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
-        [self.delegate gestureRecognizer:self needsMoveRowAtIndexPath:self.addingIndexPath toIndexPath:indexPath];
-
-        self.addingIndexPath = indexPath;
-
-        [self.tableView endUpdates];
+        
+        BOOL canMoveRow = YES;
+        
+        if ([self.delegate respondsToSelector:@selector(gestureRecognizer:canMoveRowAtIndexPathAsResultOfMovingAnotherRow:)]) {
+            canMoveRow = [self.delegate gestureRecognizer:self canMoveRowAtIndexPathAsResultOfMovingAnotherRow:indexPath];
+        }
+        
+        if (canMoveRow) {
+            [self.tableView beginUpdates];
+            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.addingIndexPath] withRowAnimation:UITableViewRowAnimationNone];
+            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            [self.delegate gestureRecognizer:self needsMoveRowAtIndexPath:self.addingIndexPath toIndexPath:indexPath];
+            
+            self.addingIndexPath = indexPath;
+            
+            [self.tableView endUpdates];
+        }
     }
 }
 
