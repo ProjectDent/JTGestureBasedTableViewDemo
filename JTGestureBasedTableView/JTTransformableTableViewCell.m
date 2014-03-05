@@ -10,6 +10,10 @@
 #import "UIColor+JTGestureBasedTableViewHelper.h"
 #import <QuartzCore/QuartzCore.h>
 
+@interface JTUnfoldingTableViewCell ()
+
+@end
+
 
 #pragma mark -
 
@@ -82,6 +86,23 @@
     }
     self.textLabel.frame = CGRectMake(10.0, 0.0, contentViewSize.width - 20.0, self.finishedHeight);
     self.detailTextLabel.frame = CGRectMake(10.0, -self.finishedHeight / 2, contentViewSize.width - 20.0, self.finishedHeight);
+    
+    if (self.imageView.image) {
+        if (!self.bottomImageView) {
+            self.bottomImageView = [[UIImageView alloc] init];
+            [self.transformable2HalfView addSubview:self.bottomImageView];
+        }
+        self.bottomImageView.frame = CGRectMake(self.imageView.frame.origin.x,
+                                                self.imageView.frame.origin.y - (self.finishedHeight / 2),
+                                                self.imageView.frame.size.width,
+                                                self.imageView.frame.size.height);
+        self.bottomImageView.contentMode = self.imageView.contentMode;
+        self.bottomImageView.image = self.imageView.image;
+    }
+    else {
+        [self.bottomImageView removeFromSuperview];
+        self.bottomImageView = nil;
+    }
 }
 
 - (UILabel *)textLabel

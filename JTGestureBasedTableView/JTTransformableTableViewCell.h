@@ -36,6 +36,8 @@ typedef enum {
 @property (nonatomic, strong) UIView *transformable1HalfView;
 @property (nonatomic, strong) UIView *transformable2HalfView;
 
+@property (nonatomic, strong) UIImageView *bottomImageView;
+
 @end
 
 @interface JTPullDownTableViewCell : JTTransformableTableViewCell
