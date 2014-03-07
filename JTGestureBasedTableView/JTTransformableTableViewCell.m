@@ -88,7 +88,7 @@
     CGSize textLabelSize = [self.textLabel.text sizeWithAttributes:@{NSFontAttributeName: self.textLabel.font}];
     
     self.textLabel.frame = CGRectMake(10.0, 0.0, textLabelSize.width, textLabelSize.height);
-    self.textLabel.center = CGPointMake(self.textLabel.center.x, contentViewSize.height / 2);
+    self.textLabel.center = CGPointMake(self.textLabel.center.x, 1 + (contentViewSize.height / 2));
     self.detailTextLabel.frame = CGRectMake(10.0, self.textLabel.frame.origin.y  - (self.finishedHeight / 2), self.textLabel.frame.size.width, self.textLabel.frame.size.height);
     
     if (self.imageView.image) {
