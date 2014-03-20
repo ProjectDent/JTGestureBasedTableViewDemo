@@ -50,20 +50,29 @@
     return self;
 }
 
+-(void)setupColors {
+    float fraction = [self fractionOfTotalHeight];
+    self.transformable1HalfView.backgroundColor = [self.tintColor colorWithBrightness:0.3 + 0.7*fraction];
+    self.transformable2HalfView.backgroundColor = [self.tintColor colorWithBrightness:0.5 + 0.5*fraction];
+}
+
+-(float)fractionOfTotalHeight {
+    return (self.frame.size.height / self.finishedHeight);
+}
+
 - (void)layoutSubviews
 {
     [super layoutSubviews];
 
-    CGFloat fraction = (self.frame.size.height / self.finishedHeight);
+    CGFloat fraction = [self fractionOfTotalHeight];
     fraction = MAX(MIN(1, fraction), 0);
+    
+    [self setupColors];
     
     CGFloat angle = (M_PI / 2) - asinf(fraction);
     CATransform3D transform = CATransform3DMakeRotation(angle, -1, 0, 0);
     [self.transformable1HalfView.layer setTransform:transform];
     [self.transformable2HalfView.layer setTransform:CATransform3DMakeRotation(angle, 1, 0, 0)];
-    
-    self.transformable1HalfView.backgroundColor = [self.tintColor colorWithBrightness:0.3 + 0.7*fraction];
-    self.transformable2HalfView.backgroundColor = [self.tintColor colorWithBrightness:0.5 + 0.5*fraction];
 
     CGSize contentViewSize = self.contentView.frame.size;
     CGFloat contentViewMidY = contentViewSize.height / 2;
@@ -141,6 +150,7 @@
         self.transformable1HalfView.opaque = YES;
         self.transformable2HalfView.opaque = YES;
     }
+    [self setupColors];
 }
 
 @end
