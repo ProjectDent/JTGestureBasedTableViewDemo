@@ -262,15 +262,19 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
         if ([self.delegate respondsToSelector:@selector(gestureRecognizer:lengthForCommitEditingRowAtIndexPath:)]) {
             commitEditingLength = [self.delegate gestureRecognizer:self lengthForCommitEditingRowAtIndexPath:indexPath];
         }
+        
         if (fabsf(translation.x) >= commitEditingLength) {
             if ([self.delegate respondsToSelector:@selector(gestureRecognizer:commitEditingState:forRowAtIndexPath:)]) {
                 [self.delegate gestureRecognizer:self commitEditingState:self.addingCellState forRowAtIndexPath:indexPath];
             }
-        } else {
+        }// else {
+        if (cell.alpha != 0) {
             [UIView beginAnimations:@"" context:nil];
             cell.contentView.frame = cell.contentView.bounds;
             [UIView commitAnimations];
         }
+
+        //}
         
         self.addingCellState = JTTableViewCellEditingStateMiddle;
         self.state = JTTableViewGestureRecognizerStateNone;
