@@ -13,7 +13,7 @@
 
 // Configure your viewController to conform to JTTableViewGestureEditingRowDelegate
 // and/or JTTableViewGestureAddingRowDelegate depends on your needs
-@interface ViewController () <JTTableViewGestureEditingRowDelegate, JTTableViewGestureAddingRowDelegate, JTTableViewGestureMoveRowDelegate>
+@interface ViewController () </*JTTableViewGestureEditingRowDelegate, JTTableViewGestureAddingRowDelegate,*/ JTTableViewGestureMoveRowDelegate>
 @property (nonatomic, strong) NSMutableArray *rows;
 @property (nonatomic, strong) JTTableViewGestureRecognizer *tableViewRecognizer;
 @property (nonatomic, strong) id grabbedObject;
@@ -92,6 +92,16 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+    }
+    
+    cell.textLabel.text = @"Hello";
+    
+    return cell;
+    
     NSObject *object = [self.rows objectAtIndex:indexPath.row];
     UIColor *backgroundColor = [[UIColor redColor] colorWithHueOffset:0.12 * indexPath.row / [self tableView:tableView numberOfRowsInSection:indexPath.section]];
     if ([object isEqual:ADDING_CELL]) {
@@ -201,30 +211,30 @@
 #pragma mark -
 #pragma mark JTTableViewGestureAddingRowDelegate
 
-- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsAddRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self.rows insertObject:ADDING_CELL atIndex:indexPath.row];
-}
-
-- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsCommitRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self.rows replaceObjectAtIndex:indexPath.row withObject:@"Added!"];
-    JTTransformableTableViewCell *cell = (id)[gestureRecognizer.tableView cellForRowAtIndexPath:indexPath];
-
-    BOOL isFirstCell = indexPath.section == 0 && indexPath.row == 0;
-    if (isFirstCell && cell.frame.size.height > COMMITING_CREATE_CELL_HEIGHT * 2) {
-        [self.rows removeObjectAtIndex:indexPath.row];
-        [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationMiddle];
-        // Return to list
-    }
-    else {
-        cell.finishedHeight = NORMAL_CELL_FINISHING_HEIGHT;
-        cell.imageView.image = nil;
-        cell.textLabel.text = @"Just Added!";
-    }
-}
-
-- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsDiscardRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self.rows removeObjectAtIndex:indexPath.row];
-}
+//- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsAddRowAtIndexPath:(NSIndexPath *)indexPath {
+//    [self.rows insertObject:ADDING_CELL atIndex:indexPath.row];
+//}
+//
+//- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsCommitRowAtIndexPath:(NSIndexPath *)indexPath {
+//    [self.rows replaceObjectAtIndex:indexPath.row withObject:@"Added!"];
+//    JTTransformableTableViewCell *cell = (id)[gestureRecognizer.tableView cellForRowAtIndexPath:indexPath];
+//
+//    BOOL isFirstCell = indexPath.section == 0 && indexPath.row == 0;
+//    if (isFirstCell && cell.frame.size.height > COMMITING_CREATE_CELL_HEIGHT * 2) {
+//        [self.rows removeObjectAtIndex:indexPath.row];
+//        [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationMiddle];
+//        // Return to list
+//    }
+//    else {
+//        cell.finishedHeight = NORMAL_CELL_FINISHING_HEIGHT;
+//        cell.imageView.image = nil;
+//        cell.textLabel.text = @"Just Added!";
+//    }
+//}
+//
+//- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsDiscardRowAtIndexPath:(NSIndexPath *)indexPath {
+//    [self.rows removeObjectAtIndex:indexPath.row];
+//}
 
 // Uncomment to following code to disable pinch in to create cell gesture
 //- (NSIndexPath *)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer willCreateCellAtIndexPath:(NSIndexPath *)indexPath {
@@ -236,62 +246,62 @@
 
 #pragma mark JTTableViewGestureEditingRowDelegate
 
-- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer didEnterEditingState:(JTTableViewCellEditingState)state forRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-
-    UIColor *backgroundColor = nil;
-    switch (state) {
-        case JTTableViewCellEditingStateMiddle:
-            backgroundColor = [[UIColor redColor] colorWithHueOffset:0.12 * indexPath.row / [self tableView:self.tableView numberOfRowsInSection:indexPath.section]];
-            break;
-        case JTTableViewCellEditingStateRight:
-            backgroundColor = [UIColor greenColor];
-            break;
-        default:
-            backgroundColor = [UIColor darkGrayColor];
-            break;
-    }
-    cell.contentView.backgroundColor = backgroundColor;
-    if ([cell isKindOfClass:[JTTransformableTableViewCell class]]) {
-        ((JTTransformableTableViewCell *)cell).tintColor = backgroundColor;
-    }
-}
-
-// This is needed to be implemented to let our delegate choose whether the panning gesture should work
-- (BOOL)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    return YES;
-}
-
-- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer commitEditingState:(JTTableViewCellEditingState)state forRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableView *tableView = gestureRecognizer.tableView;
-    
-    
-    NSIndexPath *rowToBeMovedToBottom = nil;
-
-    [tableView beginUpdates];
-    if (state == JTTableViewCellEditingStateLeft) {
-        // An example to discard the cell at JTTableViewCellEditingStateLeft
-        [self.rows removeObjectAtIndex:indexPath.row];
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationLeft];
-    } else if (state == JTTableViewCellEditingStateRight) {
-        // An example to retain the cell at commiting at JTTableViewCellEditingStateRight
-        [self.rows replaceObjectAtIndex:indexPath.row withObject:DONE_CELL];
-        [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationLeft];
-        rowToBeMovedToBottom = indexPath;
-    } else {
-        // JTTableViewCellEditingStateMiddle shouldn't really happen in
-        // - [JTTableViewGestureDelegate gestureRecognizer:commitEditingState:forRowAtIndexPath:]
-    }
-    [tableView endUpdates];
-
-
-    // Row color needs update after datasource changes, reload it.
-    [tableView performSelector:@selector(reloadVisibleRowsExceptIndexPath:) withObject:indexPath afterDelay:JTTableViewRowAnimationDuration];
-
-    if (rowToBeMovedToBottom) {
-        [self performSelector:@selector(moveRowToBottomForIndexPath:) withObject:rowToBeMovedToBottom afterDelay:JTTableViewRowAnimationDuration * 2];
-    }
-}
+//- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer didEnterEditingState:(JTTableViewCellEditingState)state forRowAtIndexPath:(NSIndexPath *)indexPath {
+//    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+//
+//    UIColor *backgroundColor = nil;
+//    switch (state) {
+//        case JTTableViewCellEditingStateMiddle:
+//            backgroundColor = [[UIColor redColor] colorWithHueOffset:0.12 * indexPath.row / [self tableView:self.tableView numberOfRowsInSection:indexPath.section]];
+//            break;
+//        case JTTableViewCellEditingStateRight:
+//            backgroundColor = [UIColor greenColor];
+//            break;
+//        default:
+//            backgroundColor = [UIColor darkGrayColor];
+//            break;
+//    }
+//    cell.contentView.backgroundColor = backgroundColor;
+//    if ([cell isKindOfClass:[JTTransformableTableViewCell class]]) {
+//        ((JTTransformableTableViewCell *)cell).tintColor = backgroundColor;
+//    }
+//}
+//
+//// This is needed to be implemented to let our delegate choose whether the panning gesture should work
+//- (BOOL)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+//    return YES;
+//}
+//
+//- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer commitEditingState:(JTTableViewCellEditingState)state forRowAtIndexPath:(NSIndexPath *)indexPath {
+//    UITableView *tableView = gestureRecognizer.tableView;
+//    
+//    
+//    NSIndexPath *rowToBeMovedToBottom = nil;
+//
+//    [tableView beginUpdates];
+//    if (state == JTTableViewCellEditingStateLeft) {
+//        // An example to discard the cell at JTTableViewCellEditingStateLeft
+//        [self.rows removeObjectAtIndex:indexPath.row];
+//        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+//    } else if (state == JTTableViewCellEditingStateRight) {
+//        // An example to retain the cell at commiting at JTTableViewCellEditingStateRight
+//        [self.rows replaceObjectAtIndex:indexPath.row withObject:DONE_CELL];
+//        [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+//        rowToBeMovedToBottom = indexPath;
+//    } else {
+//        // JTTableViewCellEditingStateMiddle shouldn't really happen in
+//        // - [JTTableViewGestureDelegate gestureRecognizer:commitEditingState:forRowAtIndexPath:]
+//    }
+//    [tableView endUpdates];
+//
+//
+//    // Row color needs update after datasource changes, reload it.
+//    [tableView performSelector:@selector(reloadVisibleRowsExceptIndexPath:) withObject:indexPath afterDelay:JTTableViewRowAnimationDuration];
+//
+//    if (rowToBeMovedToBottom) {
+//        [self performSelector:@selector(moveRowToBottomForIndexPath:) withObject:rowToBeMovedToBottom afterDelay:JTTableViewRowAnimationDuration * 2];
+//    }
+//}
 
 #pragma mark JTTableViewGestureMoveRowDelegate
 
@@ -299,10 +309,10 @@
     return YES;
 }
 
-- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsCreatePlaceholderForRowAtIndexPath:(NSIndexPath *)indexPath {
-    self.grabbedObject = [self.rows objectAtIndex:indexPath.row];
-    [self.rows replaceObjectAtIndex:indexPath.row withObject:DUMMY_CELL];
-}
+//- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsCreatePlaceholderForRowAtIndexPath:(NSIndexPath *)indexPath {
+//    self.grabbedObject = [self.rows objectAtIndex:indexPath.row];
+//    [self.rows replaceObjectAtIndex:indexPath.row withObject:DUMMY_CELL];
+//}
 
 - (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsMoveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath {
     id object = [self.rows objectAtIndex:sourceIndexPath.row];
@@ -310,9 +320,9 @@
     [self.rows insertObject:object atIndex:destinationIndexPath.row];
 }
 
-- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsReplacePlaceholderForRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self.rows replaceObjectAtIndex:indexPath.row withObject:self.grabbedObject];
-    self.grabbedObject = nil;
-}
+//- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsReplacePlaceholderForRowAtIndexPath:(NSIndexPath *)indexPath {
+//    [self.rows replaceObjectAtIndex:indexPath.row withObject:self.grabbedObject];
+//    self.grabbedObject = nil;
+//}
 
 @end

@@ -144,12 +144,12 @@
 
 -(void)setTintColor:(UIColor *)tintColor {
     [super setTintColor:tintColor];
-    if (tintColor.alpha >= 1.0) {
-        self.opaque = YES;
-        self.contentView.opaque = YES;
-        self.transformable1HalfView.opaque = YES;
-        self.transformable2HalfView.opaque = YES;
-    }
+//    if (tintColor.alpha >= 1.0) {
+//        self.opaque = YES;
+//        self.contentView.opaque = YES;
+//        self.transformable1HalfView.opaque = YES;
+//        self.transformable2HalfView.opaque = YES;
+//    }
     [self setupColors];
 }
 

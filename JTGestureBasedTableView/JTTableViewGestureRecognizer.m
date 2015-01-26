@@ -36,6 +36,7 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
 @property (nonatomic, assign) CGFloat                        scrollingRate;
 @property (nonatomic, strong) NSTimer                       *movingTimer;
 @property (nonatomic) CGSize selectedLocationDifference;
+@property (nonatomic, strong) NSIndexPath *indexPathOfCellBeingMoved;
 
 - (void)updateAddingIndexPathForCurrentLocation;
 - (void)commitOrDiscardCell;
@@ -101,6 +102,7 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
             [self.tableView beginUpdates];
             [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.addingIndexPath] withRowAnimation:UITableViewRowAnimationNone];
             [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            self.indexPathOfCellBeingMoved = indexPath;
             [self.delegate gestureRecognizer:self needsMoveRowAtIndexPath:self.addingIndexPath toIndexPath:indexPath];
             
             self.addingIndexPath = indexPath;
@@ -315,7 +317,11 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
         [self.tableView beginUpdates];
         [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
         [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
-        [self.delegate gestureRecognizer:self needsCreatePlaceholderForRowAtIndexPath:indexPath];
+        
+        self.indexPathOfCellBeingMoved = indexPath;
+        if ([self.delegate respondsToSelector:@selector(gestureRecognizer:needsCreatePlaceholderForRowAtIndexPath:)]) {
+            [self.delegate gestureRecognizer:self needsCreatePlaceholderForRowAtIndexPath:indexPath];
+        }
         
         if ([self.delegate respondsToSelector:@selector(gestureRecognizer:willBeginDisplayingPlaceholder:)]) {
             [self.delegate gestureRecognizer:self willBeginDisplayingPlaceholder:snapShotView];
@@ -357,7 +363,10 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
                              [weakSelf.tableView beginUpdates];
                              [weakSelf.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
                              [weakSelf.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
-                             [weakSelf.delegate gestureRecognizer:weakSelf needsReplacePlaceholderForRowAtIndexPath:indexPath];
+                             self.indexPathOfCellBeingMoved = nil;
+                             if ([weakSelf.delegate respondsToSelector:@selector(gestureRecognizer:needsReplacePlaceholderForRowAtIndexPath:)]) {
+                                 [weakSelf.delegate gestureRecognizer:weakSelf needsReplacePlaceholderForRowAtIndexPath:indexPath];
+                             }
                              [weakSelf.tableView endUpdates];
                              
                              [weakSelf.tableView reloadVisibleRowsExceptIndexPath:indexPath];

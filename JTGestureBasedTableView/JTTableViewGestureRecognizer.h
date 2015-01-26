@@ -27,6 +27,7 @@ extern CGFloat const JTTableViewRowAnimationDuration;
 @interface JTTableViewGestureRecognizer : NSObject <UITableViewDelegate>
 
 @property (nonatomic, weak, readonly) UITableView *tableView;
+@property (nonatomic, strong, readonly) NSIndexPath *indexPathOfCellBeingMoved;
 
 + (JTTableViewGestureRecognizer *)gestureRecognizerWithTableView:(UITableView *)tableView delegate:(id)delegate;
 
@@ -79,13 +80,13 @@ extern CGFloat const JTTableViewRowAnimationDuration;
 @protocol JTTableViewGestureMoveRowDelegate <NSObject>
 
 - (BOOL)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer canMoveRowAtIndexPath:(NSIndexPath *)indexPath;
-- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsCreatePlaceholderForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsMoveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath;
-- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsReplacePlaceholderForRowAtIndexPath:(NSIndexPath *)indexPath;
 
 @optional
 
 - (BOOL)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer canMoveRowAtIndexPathAsResultOfMovingAnotherRow:(NSIndexPath *)indexPath;
+- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsCreatePlaceholderForRowAtIndexPath:(NSIndexPath *)indexPath;
+- (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer needsReplacePlaceholderForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer willBeginDisplayingPlaceholder:(UIView *)placeholder;
 - (void)gestureRecognizer:(JTTableViewGestureRecognizer *)gestureRecognizer willEndDisplayingPlaceholder:(UIView *)placeholder;
 
