@@ -235,11 +235,7 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
         if ([self.delegate respondsToSelector:@selector(gestureRecognizer:lengthForCommitEditingRowAtIndexPath:)]) {
             commitEditingLength = [self.delegate gestureRecognizer:self lengthForCommitEditingRowAtIndexPath:indexPath];
         }
-        
-        BOOL commitLengthReached = NO;
-        
         if (fabsf(translation.x) >= commitEditingLength) {
-            commitLengthReached = YES;
             if (self.addingCellState == JTTableViewCellEditingStateMiddle) {
                 self.addingCellState = translation.x > 0 ? JTTableViewCellEditingStateRight : JTTableViewCellEditingStateLeft;
             }
@@ -249,11 +245,8 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
             }
         }
 
-        if ([self.delegate respondsToSelector:@selector(gestureRecognizer:didEnterEditingState:commitLengthReached:forRowAtIndexPath:)]) {
-            [self.delegate gestureRecognizer:self
-                        didEnterEditingState:self.addingCellState
-                         commitLengthReached:commitLengthReached
-                           forRowAtIndexPath:indexPath];
+        if ([self.delegate respondsToSelector:@selector(gestureRecognizer:didEnterEditingState:forRowAtIndexPath:)]) {
+            [self.delegate gestureRecognizer:self didEnterEditingState:self.addingCellState forRowAtIndexPath:indexPath];
         }
 
     } else if (recognizer.state == UIGestureRecognizerStateEnded) {
