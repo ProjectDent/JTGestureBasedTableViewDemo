@@ -290,6 +290,10 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
     if (recognizer.state == UIGestureRecognizerStateBegan) {
         self.state = JTTableViewGestureRecognizerStateMoving;
         
+        [self.tableView deselectRowAtIndexPath:indexPath animated:false];
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            
         UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
         UIGraphicsBeginImageContextWithOptions(cell.bounds.size, NO, 0);
         [cell.layer renderInContext:UIGraphicsGetCurrentContext()];
@@ -334,6 +338,8 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
         // Start timer to prepare for auto scrolling
         self.movingTimer = [NSTimer timerWithTimeInterval:1/8 target:self selector:@selector(scrollTable) userInfo:nil repeats:YES];
         [[NSRunLoop mainRunLoop] addTimer:self.movingTimer forMode:NSDefaultRunLoopMode];
+            
+        });
 
     } else if (recognizer.state == UIGestureRecognizerStateEnded || recognizer.state == UIGestureRecognizerStateCancelled || recognizer.state == UIGestureRecognizerStateFailed) {
         // While long press ends, we remove the snapshot imageView
