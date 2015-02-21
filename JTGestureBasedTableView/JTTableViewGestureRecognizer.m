@@ -90,7 +90,7 @@ CGFloat const JTTableViewRowAnimationDuration          = 0.25;       // Rough gu
     indexPath = [self.tableView indexPathForRowAtPoint:location];
     
 
-    if (indexPath && ! [indexPath isEqual:self.addingIndexPath]) {
+    if (indexPath && self.addingIndexPath && ! [indexPath isEqual:self.addingIndexPath]) {
         
         BOOL canMoveRow = YES;
         
